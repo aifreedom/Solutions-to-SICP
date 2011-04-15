@@ -249,4 +249,40 @@ A =new-good-enough?= is defined below.
 9
 </src>
 
-* 
+* Ex 1.10
+
+ - f(n) = 2n; 
+ - g(n) = 2^n;
+ - h(n) = 2^(2^2^(...^2)) (n of 2s) (*Uncertain*)
+
+* Ex 1.11
+
+ - recursive procedure f
+<src>
+(define (f n)
+  (if (< n 3)
+      n
+      (+ (f (- n 1))
+         (* (f (- n 2)) 2)
+         (* (f (- n 3)) 3))))
+</src>
+
+ - iterative procedure f
+<src>
+(define (f n)
+  (define (f-iter a b c count)
+    (if (= count 0)
+        c
+        (f-iter (+ a (* b 2) (* c 3)) a b (- count 1))))
+  (f-iter 2 1 0 n))
+</src>
+
+* Ex 1.12
+<src>
+(define (pascal-tri x y)
+  (cond ((= y 1) 1)
+        ((= x y) 1)
+        ((> y x) 0)
+        (else (+ (pascal-tri (- x 1) (- y 1))
+                 (pascal-tri (- x 1) y)))))
+</src>
