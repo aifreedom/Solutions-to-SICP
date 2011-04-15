@@ -1,0 +1,252 @@
+#title Chapter 1: Building Abstractions with Procedures
+
+* Ex 1.1
+<src>
+10
+12
+8
+3
+6
+a
+b
+19
+#f
+4
+16
+6
+16
+</src>
+
+* Ex 1.2
+
+<src>
+(/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5))))) (* 3 (- 6 2) (- 2 7)))
+</src>
+
+* Ex 1.3
+
+<src>
+(define (sum-of-max-two a b c)
+  (- (+ a b c) (min a b c)))
+</src>
+
+* Ex 1.4
+
+If b > 0, the result will be a+b. Otherwise the result will be a-b.
+
+* Ex 1.5
+
+If the interpreter uses applicative-order evaluation, Ben will observe
+an infinitive recursion. And with a normal-reder interpreter, Ben will
+get 0.
+
+Because if the interpreter is applicative-ordered, it will firstly try
+to expand both of the operands in =(test 0 (p))=, which is =0= and =(p)=.
+But =(p)= is defined recursively, the expansion will never stop.
+Therefore an infinitive resursion occors.
+
+But a normal-order interpreter will first substitute the opreand
+expressions for parameters. So, =(test 0 (p))= becomes <code>(if (= 0 0)
+0 (p))</code>. And finally becomes =0=.
+
+* Ex 1.6
+
+An error that maximum recursion depth exceeded will happen if Alyssa
+attempts to use the =new-if= to compute square roots. Because in
+applicative-order evaluation, which is adopted by the Lisp
+interpreter, the =else-clause= parameter will be expanded before testing
+the value of the =predicate=. But in =sqrt-iter=, the =else-clause= is
+=sqrt-iter= itself. So an infinitive recursion happens.
+
+* Ex 1.7
+
+The absolute precision coded in old =good-enough?= does not work with
+numbers that are too large or too small, because it is too strict for
+large numbers and too loose for small numbers.
+
+A =new-good-enough?= is defined below.
+
+<src>
+(define (new-sqrt x)
+  (define (average a b)
+    (/ (+ a b) 2))
+  (define (new-good-enough? new old)
+    (< (/ (abs (- new old)) old) 0.001))
+  (define (good-enough? guess x)
+    (< (abs (- (square guess) x)) 0.001))
+  (define (improve guess x)
+    (average guess (/ x guess)))
+  (define (new-sqrt-iter new old x)
+    (if (new-good-enough? new old)
+        new
+        (new-sqrt-iter (improve new x)
+                       new
+                       x)))
+  (new-sqrt-iter 1.0 x x))
+</src>
+
+* Ex 1.8
+
+<src>
+(define (cube-root x)
+  (define (good-enough? new old)
+    (< (/ (abs (- new old)) old) 1e-6))
+  (define (improve guess x)
+    (/ (+ (/ x (square guess)) (* guess 2)) 3))
+  (define (iter new old x)
+    (if (good-enough? new old)
+        new
+        (iter (improve new x)
+              new
+              x)))
+  (iter 1.0 x x))
+</src>
+
+* Ex 1.9
+
+<src>
+(define (+ a b)
+  (if (= a 0)
+      b
+      (inc (+ (dec a) b))))
+(+ 4 5)
+(if (= 4 0)
+    5
+    (inc (+ (dec 4) 5)))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (+ (dec 3) 5)))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc (+ (dec 2) 5)))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc (if (= 1 0)
+                               5
+                               (inc (+ (dec 1) 5)))))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc (if (= 1 0)
+                               5
+                               (inc (if (= 0 0)
+                                        5
+                                        (inc (+ 0 5)))))))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc (if (= 1 0)
+                               5
+                               (inc (if (= 0 0)
+                                        5
+                                        (inc (if (= 0 0)
+                                                 0
+                                                 (inc (+ (dec 0) 5)))))))))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc (if (= 1 0)
+                               5
+                               (inc (if (= 0 0)
+                                        5
+                                        (inc 0))))))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc (if (= 1 0)
+                               5
+                               (inc 5))))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc (if (= 1 0)
+                               5
+                               6)))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      (inc 6))))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc (if (= 2 0)
+                      5
+                      7)))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             (inc 7))))
+(if (= 4 0)
+    0
+    (inc (if (= 3 0)
+             5
+             8)))
+(if (= 4 0)
+    0
+    (inc 8))
+(if (= 4 0)
+    0
+    9)
+9
+</src>
+
+<src>
+(define (+ a b)
+  (if (= a 0)
+      b
+      (+ (dec a) (inc b))))
+
+(+ 4 5)
+(if (= 4 0)
+    5
+    (+ (dec 4) (inc 5)))
+(+ 3 6)
+(if (= 3 0)
+    8
+    (+ (dec 3) (inc 6)))
+(+ 2 7)
+(if (= 2 0)
+    7
+    (+ (dec 2) (inc 7)))
+(+ 1 8)
+(if (= 1 0)
+    8
+    (+ (dec 1) (inc 8)))
+(+ 0 9)
+(if (= 0 0)
+    9
+    (+ (dec 0) (inc 9)))
+9
+</src>
+
+* 
