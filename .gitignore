@@ -1,3 +1,9 @@
 *~
 /html/*
 /pdf/*
+/src/*
+/auto/*
+*.html
+*.pdf
+*.tex
+*.dvi
